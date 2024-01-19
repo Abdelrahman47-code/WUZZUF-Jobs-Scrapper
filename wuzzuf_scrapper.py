@@ -12,17 +12,19 @@ class JobScraper:
         self.num_pages = num_pages
         self.file_name = f'{job_title.title()} Jobs.csv'
         self.base_url = 'https://wuzzuf.net'
-        self.counter = 1  # Initialize the counter
+        self.counter = 1
 
     def scrape_jobs(self, display_mode, tree, text_widget, completion_text):
+        jobs_found = False
+        
         # open csv file and write header
         with open(self.file_name, 'w', encoding='utf-8', newline='') as f:
             writer = csv.writer(f)
-            writer.writerow(['Num', 'JobTitle', 'Company', 'Location', 'Time',
-                             'Job URL', 'Job Type', 'Experience', 'Job Categories', 'Job Skills'])
+            writer.writerow(['Num', 'JobTitle', 'Company', 'Location', 'Time', 'Job Type',
+                             'Experience', 'Job Categories', 'Job Skills','Job URL'])
 
             # scrape jobs from each page
-            for i in range(self.num_pages + 1):
+            for i in range(self.num_pages):
                 url = f'https://wuzzuf.net/search/jobs/?a=hpb%7Cspbg&q={self.job_title}&start={i}'
                 page = requests.get(url, headers={"Accept-Encoding": "utf-8"})
 
@@ -30,7 +32,24 @@ class JobScraper:
                 jobs = soup.find_all('div', class_="css-1gatmva e1v1l3u10")
 
                 if len(jobs) == 0:
+                    jobs_found = False
+                    
+                    # If no jobs are found, display a message and break the loop
+                    printint('No Jobs Found')
+                    completion_text.set('No Jobs Found')
+
+                    # Hide the Treeview or ScrolledText widget based on the selected mode
+                    if display_mode == 'Treeview':
+                        tree.pack_forget()
+                        x_scrollbar.pack_forget()
+                    elif display_mode == 'ScrolledText':
+                        text_widget.pack_forget()
+
                     break
+                else:
+                    jobs_found = True
+                    completion_text.set('')
+                    
 
                 for job in jobs:
                     # get job information
@@ -92,7 +111,7 @@ class JobScraper:
                                                    f'Experience: {experience}\n'
                                                    f'Job Categories: {job_categories}\n'
                                                    f'Job Skills: {job_skills_str}\n'
-                                                   f'{"-" * 100}\n{"-" * 100}\n')
+                                                   f'{"-" * 200}\n{"-" * 200}\n')
 
                         # Add binding to open URL on click
                         text_widget.tag_bind(f'url_{self.counter}', '<Button-1>',
@@ -113,10 +132,13 @@ class JobScraper:
                 # add a delay between requests to prevent getting blocked
                 time.sleep(2)
 
-        print(f'Scraping for "{self.job_title}" jobs is complete. Data has been written to "{self.file_name}".')
-        completion_text.set(
-            f'Scraping for "{self.job_title}" jobs is complete. {self.counter - 1} records have been inserted to "{self.file_name}".')
+        # Check if at least one job is found before displaying completion message
+        if jobs_found:
+            print(f'Scraping for "{self.job_title}" jobs is complete. Data has been written to "{self.file_name}".')
+            completion_text.set(
+                f'Scraping for "{self.job_title}" jobs is complete. {self.counter - 1} records have been inserted to "{self.file_name}".')
 
+                
 def scrape_jobs_gui():
     job_title = job_title_entry.get()
     num_pages = int(num_pages_entry.get())
@@ -125,6 +147,7 @@ def scrape_jobs_gui():
     # Clear previous data
     tree.delete(*tree.get_children())
     text_widget.delete('1.0', tk.END)
+    completion_text.set('')
 
     # Show the appropriate widget based on the selected mode
     if display_mode == 'Treeview':
@@ -133,6 +156,10 @@ def scrape_jobs_gui():
     elif display_mode == 'ScrolledText':
         text_widget.pack()
 
+    else:
+        completion_text.set('Invalid display mode selected!')
+        return
+    
     job_scraper = JobScraper(job_title, num_pages)
     job_scraper.scrape_jobs(display_mode, tree, text_widget, completion_text)
 
@@ -148,7 +175,7 @@ style.configure("Treeview.Heading", font=('Arial', 14, 'bold'), foreground='red'
 style.configure("Treeview", font=('Arial', 12))
 
 # Create a label for the title
-title_label = tk.Label(window, text='Scrapping WUZZUF Jobs', font=('Arial', 20, 'bold'), fg='white', bg='black')
+title_label = tk.Label(window, text='WUZZUF Jobs Scrapper', font=('Arial', 20, 'bold'), fg='white', bg='black')
 title_label.pack(pady=10)
 
 # Create a label and entry for job title input
@@ -186,8 +213,8 @@ x_scrollbar = ttk.Scrollbar(window, orient='horizontal', command=tree.xview)
 x_scrollbar.pack(fill='x')
 
 # Set column headings and widths
-columns_and_widths = {'ID': 60, 'Job Title': 350, 'Company': 200, 'Location': 150, 'Time Posted': 150,
-                      'Job Type': 150, 'Experience': 150, 'Job Categories': 200, 'Job Skills': 300, 'Job URL': 250}
+columns_and_widths = {'ID': 60, 'Job Title': 400, 'Company': 400, 'Location': 300, 'Time Posted': 150,
+                      'Job Type': 300, 'Experience': 250, 'Job Categories': 800, 'Job Skills': 800, 'Job URL': 800}
 
 for col, width in columns_and_widths.items():
     tree.heading(col, text=col, anchor='center')
@@ -214,4 +241,4 @@ watermark_label.place(relx=0.5, rely=0.95, anchor='center')
 # Start the GUI event loop
 window.mainloop()
 
-# Alhumdallah
+# Alhumdallah for completing this project.
