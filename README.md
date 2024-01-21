@@ -18,5 +18,3 @@ Feel free to contribute to this project. If you have suggestions or find any iss
 ## Made by: Abdelrahman Eldaba 👨‍💻
 
 Connect with me on [LinkedIn](https://www.linkedin.com/in/abdelrahman-eldaba-739805192/) 🌐
-
-Look at my [GitHub](https://github.com/Abdelrahman47-code) 🚀
