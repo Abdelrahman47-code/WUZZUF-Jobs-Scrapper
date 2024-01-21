@@ -11,19 +11,18 @@ class JobScraper:
         self.job_title = job_title
         self.num_pages = num_pages
         self.file_name = f'{job_title.title()} Jobs.csv'
-        self.base_url = 'https://wuzzuf.net'
         self.counter = 1
 
     def scrape_jobs(self, display_mode, tree, text_widget, completion_text):
         jobs_found = False
         
-        # open csv file and write header
+        # Open csv file and write header
         with open(self.file_name, 'w', encoding='utf-8', newline='') as f:
             writer = csv.writer(f)
             writer.writerow(['Num', 'JobTitle', 'Company', 'Location', 'Time', 'Job Type',
                              'Experience', 'Job Categories', 'Job Skills','Job URL'])
 
-            # scrape jobs from each page
+            # Scrape jobs from each page
             for i in range(self.num_pages):
                 url = f'https://wuzzuf.net/search/jobs/?a=hpb%7Cspbg&q={self.job_title}&start={i}'
                 page = requests.get(url, headers={"Accept-Encoding": "utf-8"})
@@ -32,27 +31,27 @@ class JobScraper:
                 jobs = soup.find_all('div', class_="css-1gatmva e1v1l3u10")
 
                 if len(jobs) == 0:
-                    jobs_found = False
-                    
-                    # If no jobs are found, display a message and break the loop
-                    printint('No Jobs Found')
-                    completion_text.set('No Jobs Found')
+                    # If no jobs are found
+                    if i == 0:
+                        jobs_found = False
+                        print('No Jobs Found')
+                        completion_text.set('No Jobs Found')
 
-                    # Hide the Treeview or ScrolledText widget based on the selected mode
-                    if display_mode == 'Treeview':
-                        tree.pack_forget()
-                        x_scrollbar.pack_forget()
-                    elif display_mode == 'ScrolledText':
-                        text_widget.pack_forget()
-
+                        # Hide the Treeview or ScrolledText widget based on the selected mode
+                        if display_mode == 'Treeview':
+                            tree.pack_forget()
+                            x_scrollbar.pack_forget()
+                        elif display_mode == 'ScrolledText':
+                            text_widget.pack_forget()
                     break
+                    
                 else:
                     jobs_found = True
                     completion_text.set('')
                     
 
                 for job in jobs:
-                    # get job information
+                    # Get job main information
                     job_title = job.find('h2', class_="css-m604qf").text.strip().replace(', ', '-')
                     company_elem = job.find('a', class_="css-17s97q8").text.strip().split()
                     company = ' '.join(company_elem[:-1])
@@ -60,7 +59,6 @@ class JobScraper:
                     time_posted_elem = job.find('div', class_="css-4c4ojb")
                     time_posted = time_posted_elem.text.strip() if time_posted_elem else ''
                     job_url = job.find('a', class_="css-o171kl")['href']
-
                     job_type_elem = job.find_all('a', class_="css-n2jc4m")
                     job_type = ' | '.join(job_type.text.strip() for job_type in job_type_elem)
 
@@ -68,7 +66,6 @@ class JobScraper:
                     details = job.find('div', class_="css-y4udm8")
                     categories = details.find_all('a', class_="css-o171kl")
                     skills = details.find_all('a', class_="css-5x9pm1")
-
                     experience_elem = categories[0].text.strip()
                     experience_span = details.find_all('span')
                     experience = f'{experience_elem} | {experience_span[1].text[2:].strip()}' if (
@@ -126,11 +123,12 @@ class JobScraper:
 
                     # Update the display
                     window.update()
+                    # Increment the counter
+                    self.counter += 1
 
-                    self.counter += 1  # Increment the counter
-
-                # add a delay between requests to prevent getting blocked
+                # Add a delay between requests to prevent getting blocked
                 time.sleep(2)
+                print(f'Page {i+1} scrapped successfully')
 
         # Check if at least one job is found before displaying completion message
         if jobs_found:
@@ -165,7 +163,7 @@ def scrape_jobs_gui():
 
 # Create the main window
 window = tk.Tk()
-window.title('Job Scraper')
+window.title('WUZZUF Job Scraper')
 window.configure(bg='black')
 window.state('zoomed')
 
@@ -241,4 +239,4 @@ watermark_label.place(relx=0.5, rely=0.95, anchor='center')
 # Start the GUI event loop
 window.mainloop()
 
-# Alhumdallah for completing this project.
+# Alhumdallah for completing this project 🎉🙏
