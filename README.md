@@ -1,4 +1,5 @@
 # WUZZUF Jobs Scrapper
+![image](https://integritycorp.net/wp-content/uploads/2023/02/07-integrity-Banner-Web.jpg)
 
 ## Overview
 This Job Scraper tool is designed for data scientists and web developers who want to explore job opportunities in a specific field. It fetches job listings from `[WUZZUF.net](https://wuzzuf.net/jobs/egypt)` and provides detailed information about each job.
@@ -17,4 +18,5 @@ Feel free to contribute to this project. If you have suggestions or find any iss
 ## Made by: Abdelrahman Eldaba 👨‍💻
 
 Connect with me on [LinkedIn](https://www.linkedin.com/in/abdelrahman-eldaba-739805192/) 🌐
+
 Look at my [GitHub](https://github.com/Abdelrahman47-code) 🚀
