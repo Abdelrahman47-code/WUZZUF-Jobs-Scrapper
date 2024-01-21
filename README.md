@@ -12,7 +12,13 @@ This Job Scraper tool is designed for data scientists and web developers who wan
 
 ## Demo Screenshots
 ![demo_scrapper.gif](https://github.com/Abdelrahman47-code/WUZZUF-Jobs-Scrapper/blob/main/Images/1.png)
+
+---
+
 ![demo_scrapper.gif](https://github.com/Abdelrahman47-code/WUZZUF-Jobs-Scrapper/blob/main/Images/2.png)
+
+---
+
 ![demo_scrapper.gif](https://github.com/Abdelrahman47-code/WUZZUF-Jobs-Scrapper/blob/main/Images/3.png)
 
 Feel free to contribute to this project. If you have suggestions or find any issues, please open an issue.
